@@ -28,6 +28,9 @@ public final class LookBehavior extends Behavior implements ILookBehavior {
 
     /**
      * Target's values are as follows:
+     * <p>
+     * getFirst() -> yaw
+     * getSecond() -> pitch
      */
     private Rotation target;
 
@@ -50,7 +53,7 @@ public final class LookBehavior extends Behavior implements ILookBehavior {
     @Override
     public void updateTarget(Rotation target, boolean force) {
         this.target = target;
-        if (!force) {
+         if (!force) {
             double rand = Math.random() - 0.5;
             if (Math.abs(rand) < 0.1) {
                 rand *= 4;
@@ -72,26 +75,34 @@ public final class LookBehavior extends Behavior implements ILookBehavior {
         switch (event.getState()) {
             case PRE: {
                 if (this.force) {
-                    ctx.player().setYRot(this.target.getYaw());
-                    float oldPitch = ctx.player().getXRot();
-                    float desiredPitch = this.target.getPitch();
-                    ctx.player().setXRot(desiredPitch);
-                    ctx.player().setYRot((float) (ctx.player().getYRot() + (Math.random() - 0.5) * Baritone.settings().randomLooking.value));
-                    ctx.player().setXRot((float) (ctx.player().getXRot() +  (Math.random() - 0.5) * Baritone.settings().randomLooking.value));
+                    float oldYaw = Math.round(ctx.player().rotationYaw);
+                    float desiredYaw = Math.round(this.target.getYaw());
+                    float oldPitch = Math.round(ctx.player().rotationPitch);
+                    float desiredPitch = Math.round(this.target.getPitch());
+                    float difYaw = (desiredYaw - oldYaw) / Math.round(Baritone.settings().smoothAim.value + Math.random());
+                    float difPitch = (desiredPitch - oldPitch) / Math.round(Baritone.settings().smoothAim.value + Math.random());
+                    if (ctx.player().rotationYaw != desiredYaw) {
+                        ctx.player().rotationYaw = (ctx.player().rotationYaw + difYaw);
+                    }
+                    if (ctx.player().rotationPitch != desiredPitch) {
+                        ctx.player().rotationPitch = (ctx.player().rotationPitch + difPitch);
+                    }
+                    ctx.player().rotationYaw += (Math.random() - 0.5) * Baritone.settings().randomLooking.value;
+                    ctx.player().rotationPitch += (Math.random() - 0.5) * Baritone.settings().randomLooking.value;
                     if (desiredPitch == oldPitch && !Baritone.settings().freeLook.value) {
                         nudgeToLevel();
                     }
                     this.target = null;
                 }
                 if (silent) {
-                    this.lastYaw = ctx.player().getYRot();
-                    ctx.player().setYRot(this.target.getYaw());
+                    this.lastYaw = ctx.player().rotationYaw;
+                    ctx.player().rotationYaw = this.target.getYaw();
                 }
                 break;
             }
             case POST: {
                 if (silent) {
-                    ctx.player().setYRot(this.lastYaw);
+                    ctx.player().rotationYaw = this.lastYaw;
                     this.target = null;
                 }
                 break;
@@ -101,9 +112,10 @@ public final class LookBehavior extends Behavior implements ILookBehavior {
         }
     }
 
+
     public void pig() {
         if (this.target != null) {
-            ctx.player().setYRot(this.target.getYaw());
+            ctx.player().rotationYaw = this.target.getYaw();
         }
     }
 
@@ -125,10 +137,10 @@ public final class LookBehavior extends Behavior implements ILookBehavior {
      * Nudges the player's pitch to a regular level. (Between {@code -20} and {@code 10}, increments are by {@code 1})
      */
     private void nudgeToLevel() {
-        if (ctx.player().getXRot() < -20) {
-            ctx.player().setXRot(ctx.player().getXRot() + 1);
-        } else if (ctx.player().getXRot() > 10) {
-            ctx.player().setXRot(ctx.player().getXRot() - 1);
+        if (ctx.player().rotationPitch < -20) {
+            ctx.player().rotationPitch++;
+        } else if (ctx.player().rotationPitch > 10) {
+            ctx.player().rotationPitch--;
         }
     }
 }
