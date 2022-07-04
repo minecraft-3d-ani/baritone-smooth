@@ -46,7 +46,9 @@
   <a href="http://forthebadge.com/"><img src="https://forthebadge.com/images/badges/mom-made-pizza-rolls.svg" alt="forthebadge"/></a>
 </p>
 
-A Minecraft pathfinder bot.
+A Minecraft pathfinder bot. 
+[![Java CI with Gradle](https://github.com/minecraft-3d-ani/baritone-smooth/actions/workflows/gradle_build.yml/badge.svg)](https://github.com/minecraft-3d-ani/baritone-smooth/actions/workflows/gradle_build.yml)
+[![Tests](https://github.com/minecraft-3d-ani/baritone-smooth/actions/workflows/run_tests.yml/badge.svg)](https://github.com/minecraft-3d-ani/baritone-smooth/actions/workflows/run_tests.yml)
 
 [**Baritone Discord Server**](http://discord.gg/s6fRBAUpmr)
 
